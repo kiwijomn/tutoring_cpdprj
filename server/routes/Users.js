@@ -3,6 +3,7 @@ const router = express.Router();
 const { Users } = require("../models");
 const bcrypt = require("bcrypt");
 const { sign } = require("jsonwebtoken");
+const { validateToken } = require("../middlewares/AuthMiddleware");
 
 // register에 대한 로직
 router.post("/", async (req, res) => {
@@ -45,6 +46,10 @@ router.post("/login", async (req, res) => {
     // 프론트엔드에서 해당 토큰에 대한 access를 필요로 함
     res.json(accessToken);
   });
+});
+
+router.get("/auth", validateToken, (req, res) => {
+  res.json(req.user);
 });
 
 module.exports = router;

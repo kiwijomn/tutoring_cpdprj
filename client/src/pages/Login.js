@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../helpers/AuthContext";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { setAuthState } = useContext(AuthContext);
 
   let navigate = useNavigate();
 
@@ -15,8 +17,9 @@ function Login() {
     axios.post("http://localhost:3001/auth/login", data).then((response) => { // 요청 되었을 때,
       if (response.data.error) { // 오류가 있다면 경고 표시
         alert(response.data.error);
-      } else { // 로그인 성공이면 세션 스토어에 저장할 (key value, 값으로 받게 되는 accessToken)을 받게 됨
-        sessionStorage.setItem("accessToken", response.data);
+      } else {
+        localStorage.setItem("accessToken", response.data);
+        setAuthState(true);
         navigate("/");
       }
     });
