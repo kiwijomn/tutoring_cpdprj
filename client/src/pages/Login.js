@@ -1,16 +1,24 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  let navigate = useNavigate();
 
   // login 버튼 클릭 시 호출되는 함수로, login 라우트에 대한 요청
   // username과 password를 담고있는 data 객체를 전달
   const login = () => {
     const data = { username: username, password: password }; // input 값으로 받은 username과 password를 저장
     axios.post("http://localhost:3001/auth/login", data).then((response) => { // 요청 되었을 때,
-      console.log(response.data); // 서버로부터 무엇을 얻었는지 확인하기 위한 response를 콘솔에 출력
+      if (response.data.error) { // 오류가 있다면 경고 표시
+        alert(response.data.error);
+      } else { // 로그인 성공이면 세션 스토어에 저장할 (key value, 값으로 받게 되는 accessToken)을 받게 됨
+        sessionStorage.setItem("accessToken", response.data);
+        navigate("/");
+      }
     });
   };
   return (

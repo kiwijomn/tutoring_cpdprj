@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { Users } = require("../models");
 const bcrypt = require("bcrypt");
+const { sign } = require("jsonwebtoken");
 
 // register에 대한 로직
 router.post("/", async (req, res) => {
@@ -34,7 +35,15 @@ router.post("/login", async (req, res) => {
   bcrypt.compare(password, user.password).then((match) => { // compare 결과를 match에 반환
     // match가 false라면, 에러 메세지 출력
     if (!match) res.json({ error: "잘못된 비밀번호입니다." });
-    res.json("로그인 성공");
+
+    // 로그인 성공한 경우에 대해 토큰 생성
+    const accessToken = sign( 
+      { username: user.username, id: user.id }, // 토큰으로 바꾸고 싶은 데이터
+      "importantsecret"
+    );
+
+    // 프론트엔드에서 해당 토큰에 대한 access를 필요로 함
+    res.json(accessToken);
   });
 });
 
